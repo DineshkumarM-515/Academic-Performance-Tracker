@@ -57,20 +57,40 @@ document.querySelector(`#sem${sem} .result`).innerHTML =
 
 }   
 
+let addedSemesters = []; // Global array to track added semesters
+
 function addCGPAField() {
     let container = document.getElementById("cgpa-inputs");
     let sem = container.children.length + 1;
 
-    let gpa = localStorage.getItem(`sem${sem}_gpa`) || "";
+    if (addedSemesters.includes(sem)) {
+        alert(`Semester ${sem} is already added.`);
+        return;
+    }
 
-    container.innerHTML += `
-        <div class="sub-card">
+    addedSemesters.push(sem);
+
+    container.insertAdjacentHTML('beforeend', `
+        <div class="sub-card" id="sem${sem}-card">
             <label>Semester ${sem} GPA</label>
-            <input type="number" id="cg${sem}" value="${gpa}" step="0.01">
+            <input type="number" id="cg${sem}" value="" step="0.01">
+            <button onclick="removeSemester(${sem})">Remove</button>
         </div>
-    `;
+    `);
 }
 
+function removeSemester(sem){
+    document.getElementById(`sem${sem}-card`).remove();
+    addedSemesters = addedSemesters.filter(s => s !== sem);
+    localStorage.removeItem(`manual_sem${sem}_gpa`);
+}
+
+function resetCGPAFields() {
+    let container = document.getElementById("cgpa-inputs");
+    container.innerHTML = ""; 
+    localStorage.clear(); 
+    document.getElementById("cgpa-result").innerHTML = ""; 
+}
 
 
 function calculateCGPA() {
@@ -78,27 +98,48 @@ function calculateCGPA() {
     let totalCredits = 0;
     let count = 0;
 
-    for(let sem=1;sem<=8;sem++){
-        let gpa = localStorage.getItem(`sem${sem}_gpa`);
-        let credits = localStorage.getItem(`sem${sem}_credits`);
+    addedSemesters.forEach(sem => {
+        let input = document.getElementById(`cg${sem}`);
+        let gpa = parseFloat(input.value);
+        let credits = semCredits[sem];
 
-        if(gpa && credits){
-            totalWeightedGPA += parseFloat(gpa)*parseInt(credits);
-            totalCredits += parseInt(credits);
+        if (!isNaN(gpa) && gpa >= 0 && gpa <= 10 && credits) {
+            totalWeightedGPA += gpa * credits;
+            totalCredits += credits;
             count++;
         }
-        
+    });
 
-    }
+    /*let manualInputs = document.querySelectorAll("#cgpa-inputs input");
+    manualInputs.forEach(input => {
+        let sem = input.id.replace("cg","");
+        let gpa = parseFloat(input.value);
+        let credits = semCredits[sem];
+
+        if(!isNaN(gpa) && credits && gpa >= 0 && gpa <= 10 && credits){
+            totalWeightedGPA += gpa * credits;
+            totalCredits += credits;
+            count++;
+        }
+    });*/
+
 
     if(count < 2){
         document.getElementById("cgpa-result").innerHTML = 
-            "<h2>Please Calculate atleast 2 semesters </h2>";
+            "<h2>Please provide GPA for at least 2 semesters</h2>";
         return;
     }
 
     let cgpa = (totalWeightedGPA/totalCredits).toFixed(4);
     document.getElementById("cgpa-result").innerHTML = 
         `<h2>Your Overall CGPA is ${cgpa}</h2>`;
+}
+
+function resetCGPAtab(){
+    let container = document.getElementById("cgpa-inputs");
+    container.innerHTML = "";
+    addedSemesters = [];
+    document.getElementById("cgpa-result").innerHTML = "";
+    alert("CGPA Tab has been reset!");
 }
 
