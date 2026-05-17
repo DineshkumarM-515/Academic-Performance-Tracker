@@ -1,8 +1,8 @@
-🎓 Academic Performance Tracker
+#🎓 Academic Performance Tracker
 
 A dynamic web application that calculates semester-wise GPA and credit-weighted CGPA using JavaScript, with persistent data storage and a responsive UI design.
 
-🚀 Features
+#🚀 Features
 
 📚 Semester-wise GPA calculation (Sem 1 – 8)
 
@@ -18,7 +18,7 @@ A dynamic web application that calculates semester-wise GPA and credit-weighted 
 
 📱 Responsive and clean UI design
 
-🏗️ Tech Stack
+#🏗️ Tech Stack
 
 HTML5 – Structure
 
@@ -28,7 +28,7 @@ JavaScript (ES6) – Logic & dynamic functionality
 
 localStorage API – Data persistence
 
-📂 Project Structure
+#📂 Project Structure
 ├── index.html
 ├── style.css
 ├── script.js
